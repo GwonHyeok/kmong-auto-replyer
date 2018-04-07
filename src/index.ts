@@ -1,9 +1,10 @@
 import Application from "./app";
+import Log from "./util/Log";
 
 const app = new Application();
 app.start()
-    .then(_ => console.log('exit with 0;'))
+    .then(_ => Log.d('exit with 0;'))
     .catch(error => {
-        console.error(`exit with error : ${error.message}`);
+        Log.e(error.message);
         console.error(error)
     });

@@ -38,6 +38,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var HttpClient_1 = require("./network/HttpClient");
 var LoginApi_1 = require("./api/LoginApi");
 var InboxApi_1 = require("./api/InboxApi");
+var Log_1 = require("./util/Log");
 var Application = /** @class */ (function () {
     function Application() {
         this.kmongApiClient = HttpClient_1.default.createClient({
@@ -49,18 +50,23 @@ var Application = /** @class */ (function () {
     }
     Application.prototype.start = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var loginApi, inboxApi, inboxList, inbox, messageDetails;
+            var loginApi, inboxApi, loginResponse, inboxList, inbox, messageDetails;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        console.log('Start Application');
+                        Log_1.default.d('크몽 자동 메세지 응답기 실행');
                         loginApi = new LoginApi_1.default(this.kmongApiClient);
                         inboxApi = new InboxApi_1.default(this.kmongApiClient);
                         // 로그인 요청
+                        if (process.env.KMONG_EMAIL == null)
+                            throw Error('크몽 이메일이 설정 되어 있지 않습니다');
+                        if (process.env.KMONG_PASSWORD == null)
+                            throw Error('크몽 비밀번호가 설정 되어 있지 않습니다');
                         return [4 /*yield*/, loginApi.login(process.env.KMONG_EMAIL, process.env.KMONG_PASSWORD)];
                     case 1:
-                        // 로그인 요청
-                        _a.sent();
+                        loginResponse = _a.sent();
+                        if (loginResponse.meta.status !== 1)
+                            throw Error('크몽 로그인에 실패하였습니다');
                         _a.label = 2;
                     case 2:
                         if (!this.isAppRunning) return [3 /*break*/, 8];
@@ -69,11 +75,13 @@ var Application = /** @class */ (function () {
                         return [4 /*yield*/, inboxApi.list(1)];
                     case 3:
                         inboxList = _a.sent();
+                        Log_1.default.d('인박스 리스트 검색');
                         // 유저 아이디 저장과, 읽지 않은 메세지 정보 저장
                         this.userId = inboxList.data.USERID;
                         this.unreadInboxMessages = inboxList.data.inboxGroups.filter(function (inbox) {
                             return inbox.unreadCnt > 0;
                         });
+                        Log_1.default.d("\uD544\uD130\uB9C1\uB41C \uC778\uBC15\uC2A4 \uAC2F\uC218 : " + this.unreadInboxMessages.length);
                         _a.label = 4;
                     case 4:
                         if (!(this.unreadInboxMessages.length > 0)) return [3 /*break*/, 7];
@@ -81,9 +89,10 @@ var Application = /** @class */ (function () {
                         return [4 /*yield*/, inboxApi.getMessages(inbox.username)];
                     case 5:
                         messageDetails = _a.sent();
-                        return [4 /*yield*/, inboxApi.send(messageDetails.data.inboxGroupId, this.userId, messageDetails.data.partner.USERID, '현재 부재중입니다. 잠시후 연락 드리도록 하겠습니다.!')];
+                        return [4 /*yield*/, inboxApi.send(messageDetails.data.inboxGroupId, this.userId, messageDetails.data.partner.USERID, '현재 부재중입니다. 잠시후 연락 드리도록 하겠습니다!!')];
                     case 6:
                         _a.sent();
+                        Log_1.default.d("\uC790\uB3D9 \uC751\uB2F5 \uBA54\uC138\uC9C0 \uC804\uC1A1 : (" + this.userId + ") -> (" + messageDetails.data.partner.USERID + ")");
                         return [3 /*break*/, 4];
                     case 7:
                         // 최근 작업 완료시간 업데이트
