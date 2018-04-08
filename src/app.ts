@@ -50,13 +50,15 @@ export default class Application {
             while (this.unreadInboxMessages.length > 0) {
                 const inbox = this.unreadInboxMessages.pop();
                 const messageDetails = await inboxApi.getMessages(inbox.username);
+                const message = process.env.KMONG_MESSAGE || `안녕하세요, ${inbox.username}님 현재 부재중 입니다.`;
                 await inboxApi.send(
                     messageDetails.data.inboxGroupId,
                     this.userId,
                     messageDetails.data.partner.USERID,
                     '현재 부재중입니다. 잠시후 연락 드리도록 하겠습니다!!'
                 );
-                Log.d(`자동 응답 메세지 전송 : (${this.userId}) -> (${messageDetails.data.partner.USERID})`)
+                Log.d(`자동 응답 메세지 전송 : (${this.userId}) -> (${messageDetails.data.partner.USERID})`);
+                Log.d(`메세지 : ${message}`)
             }
 
             // 최근 작업 완료시간 업데이트

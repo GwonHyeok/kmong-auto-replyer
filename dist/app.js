@@ -50,7 +50,7 @@ var Application = /** @class */ (function () {
     }
     Application.prototype.start = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var loginApi, inboxApi, loginResponse, inboxList, inbox, messageDetails;
+            var loginApi, inboxApi, loginResponse, inboxList, inbox, messageDetails, message;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -89,10 +89,12 @@ var Application = /** @class */ (function () {
                         return [4 /*yield*/, inboxApi.getMessages(inbox.username)];
                     case 5:
                         messageDetails = _a.sent();
+                        message = process.env.KMONG_MESSAGE || "\uC548\uB155\uD558\uC138\uC694, " + inbox.username + "\uB2D8 \uD604\uC7AC \uBD80\uC7AC\uC911 \uC785\uB2C8\uB2E4.";
                         return [4 /*yield*/, inboxApi.send(messageDetails.data.inboxGroupId, this.userId, messageDetails.data.partner.USERID, '현재 부재중입니다. 잠시후 연락 드리도록 하겠습니다!!')];
                     case 6:
                         _a.sent();
                         Log_1.default.d("\uC790\uB3D9 \uC751\uB2F5 \uBA54\uC138\uC9C0 \uC804\uC1A1 : (" + this.userId + ") -> (" + messageDetails.data.partner.USERID + ")");
+                        Log_1.default.d("\uBA54\uC138\uC9C0 : " + message);
                         return [3 /*break*/, 4];
                     case 7:
                         // 최근 작업 완료시간 업데이트
