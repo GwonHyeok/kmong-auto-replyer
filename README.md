@@ -20,7 +20,12 @@
 git clone https://github.com/GwonHyeok/kmong-auto-replyer.git
 ```
 
-2. Environment 설정
+2. 의존성 라이브러리 설치
+```bash
+npm install
+```
+
+3. Environment 설정
 
 ```bash
 KMONG_EMAIL=YOUR_KMONG_EMAIL
@@ -28,7 +33,7 @@ KMONG_PASSWORD=YOUR_KMONG_PASSWORD
 KMONG_MESSAGE=YOUR_CUSTOM_REPLY
 ```
 
-3. 시작
+4. 시작
 
 ```bash
 npm start
